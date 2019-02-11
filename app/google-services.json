@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "660299211228",
+    "firebase_url": "https://wmaps1-fcbbd.firebaseio.com",
+    "project_id": "wmaps1-fcbbd",
+    "storage_bucket": "wmaps1-fcbbd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:660299211228:android:92de5e98e62f6375",
+        "android_client_info": {
+          "package_name": "com.example.vzert14.wmaps_1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "660299211228-7733ui3kme315f71v7kes1mfuhlsmug6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.vzert14.wmaps_1",
+            "certificate_hash": "3002501a99a6933d55e8c1fa7a5a0e3def1b2837"
+          }
+        },
+        {
+          "client_id": "660299211228-ia9nsrrpq7ulq7755bqlunubhkqge2h4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCslfC1Pv4pI5ekmTC15K4kzKpkDsecrhg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "660299211228-4t42k3mefc0cp6n9e881ds6opeh080mn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
