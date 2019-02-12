@@ -40,6 +40,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<Marker> realTimeMarkers = new ArrayList<>();
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private static LatLng lastposition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +102,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         };
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,3000,0,locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,0,locationListener);
 
     }
 
@@ -138,16 +139,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                     LatLng Myposistion = new LatLng(latitud,longitud);
+                    lastposition = Myposistion;
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(Myposistion);
 
                     tmpRealTimeMarkers.add(mMap.addMarker(markerOptions));
 
-                    //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(Myposistion)); //Pendiente a usar en el ultimo nodo unicamente
+                    //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"))
 
                 }
 
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(lastposition)); //Pendiente a usar en el ultimo nodo unicamente
                 realTimeMarkers.clear();
                 realTimeMarkers.addAll(tmpRealTimeMarkers);
             }
