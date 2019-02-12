@@ -3,14 +3,14 @@ package com.example.vzert14.wmaps_1;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -18,7 +18,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,11 +34,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
 
     private int MY_PERMISSIONS_REQUEST_READ_CONTACTS;
-    private FusedLocationProviderClient mFusedLocationClient;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     private ArrayList<Marker> tmpRealTimeMarkers = new ArrayList<>();
     private ArrayList<Marker> realTimeMarkers = new ArrayList<>();
+    private LocationManager locationManager;
+    private LocationListener locationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,13 +50,61 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
 
         subirLatLongFirebase();
 
     }
+
+
+
+
+    private void subirLatLongFirebase(){
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(MapsActivity.this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            return;
+        }
+
+        locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Map<String,Object> latlang = new HashMap<>();
+                latlang.put("latitud",location.getLatitude());
+                latlang.put("longitud",location.getLongitude());
+
+                Log.e("Longitud: ",+location.getLongitude()+"Latitud: "+location.getLatitude());
+                databaseReference.child("usuarios").push().setValue(latlang);
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,3000,0,locationListener);
+
+    }
+
 
 
     /**
@@ -89,14 +137,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Double longitud = mp.getLongitud();
 
 
-                    LatLng sydney = new LatLng(latitud,longitud);
+                    LatLng Myposistion = new LatLng(latitud,longitud);
                     MarkerOptions markerOptions = new MarkerOptions();
-                    markerOptions.position(sydney);
+                    markerOptions.position(Myposistion);
 
                     tmpRealTimeMarkers.add(mMap.addMarker(markerOptions));
 
                     //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(Myposistion)); //Pendiente a usar en el ultimo nodo unicamente
 
                 }
 
@@ -110,39 +158,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        //Add a marker in Sydney and move the camera
-        //LatLng sydney = new LatLng(21.1144334, -101.6827457); //
-
     }
 
-    private void subirLatLongFirebase(){
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(MapsActivity.this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-            return;
-        }
-
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-
-
-                        Map<String,Object> latlang = new HashMap<>();
-                        latlang.put("latitud",location.getLatitude());
-                        latlang.put("longitud",location.getLongitude());
-
-                        Log.e("Longitud: ",+location.getLongitude()+"Latitud: "+location.getLatitude());
-                        databaseReference.child("usuarios").push().setValue(latlang);
-
-                    }
-                });
-
-    }
 
 }
+
+
